@@ -1,0 +1,479 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================================================
+   IdentiDeck Design System — Apple Ceramic Studio / True OLED Obsidian Velvet
+   Monochrome Liquid Glass Luxury · Zero SaaS Navy/Sky CTAs · WCAG AA >= 4.5:1
+   ========================================================================== */
+
+:root {
+  --bg-canvas: #F5F5F7;
+  --bg-surface: rgba(255, 255, 255, 0.82);
+  --bg-surface-solid: #FFFFFF;
+  --bg-surface-muted: rgba(0, 0, 0, 0.045);
+  --bg-surface-hover: rgba(0, 0, 0, 0.08);
+  --border-subtle: rgba(0, 0, 0, 0.07);
+  --border-strong: rgba(0, 0, 0, 0.14);
+
+  --text-primary: #111113;
+  --text-secondary: #52525B;
+  --text-muted: #63636E;
+
+  --btn-primary-bg: #111113;
+  --btn-primary-fg: #FFFFFF;
+  --btn-primary-hover: #27272A;
+
+  --status-emerald: #059669;
+  --status-amber: #B45309;
+  --status-danger: #DC2626;
+
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 12px 32px -12px rgba(0, 0, 0, 0.09);
+
+  --card-shadow:
+    0 14px 32px -12px rgba(0, 0, 0, 0.18),
+    0 2px 6px -1px rgba(0, 0, 0, 0.08);
+  --card-shadow-active:
+    0 28px 60px -16px rgba(0, 0, 0, 0.34),
+    0 8px 20px -6px rgba(0, 0, 0, 0.14);
+}
+
+.dark {
+  --bg-canvas: #050507;
+  --bg-surface: rgba(18, 18, 22, 0.78);
+  --bg-surface-solid: #111114;
+  --bg-surface-muted: rgba(255, 255, 255, 0.06);
+  --bg-surface-hover: rgba(255, 255, 255, 0.11);
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.16);
+
+  --text-primary: #FAFAFA;
+  --text-secondary: #A1A1AA;
+  --text-muted: #8E8E98;
+
+  --btn-primary-bg: #FAFAFA;
+  --btn-primary-fg: #09090B;
+  --btn-primary-hover: #E4E4E7;
+
+  --status-emerald: #10B981;
+  --status-amber: #F59E0B;
+  --status-danger: #F87171;
+
+  --glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 2px 6px rgba(0, 0, 0, 0.48),
+    0 18px 42px -16px rgba(0, 0, 0, 0.75);
+
+  --card-shadow:
+    0 14px 34px -10px rgba(0, 0, 0, 0.65),
+    0 2px 8px -2px rgba(0, 0, 0, 0.45);
+  --card-shadow-active:
+    0 30px 64px -14px rgba(0, 0, 0, 0.85),
+    0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+/* ==========================================================================
+   Base Document & Typography
+   ========================================================================== */
+
+@layer base {
+  html {
+    font-family:
+      'Inter',
+      'Noto Sans SC',
+      -apple-system,
+      BlinkMacSystemFont,
+      'SF Pro Display',
+      'PingFang SC',
+      'Microsoft YaHei',
+      sans-serif;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    -webkit-tap-highlight-color: transparent;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--bg-canvas);
+    color: var(--text-primary);
+    overflow-x: clip;
+  }
+
+  code,
+  kbd,
+  pre,
+  .font-mono {
+    font-family:
+      'JetBrains Mono',
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      Monaco,
+      Consolas,
+      monospace;
+  }
+
+  button:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled),
+  input[type="radio"]:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  :focus-visible {
+    outline: 2px solid #111113;
+    outline-offset: 2px;
+  }
+
+  .dark :focus-visible {
+    outline-color: #FAFAFA;
+  }
+}
+
+/* ==========================================================================
+   Liquid Glass Surfaces & Architectural Engineering Canvas Helpers
+   ========================================================================== */
+
+.liquid-glass {
+  background-color: var(--bg-surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--glass-shadow);
+}
+
+.surface-panel {
+  background-color: var(--bg-surface);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--glass-shadow);
+}
+
+/* Subtle engineering micro-dot canvas for Relationship Graph */
+.dot-matrix-bg {
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.085) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+.dark .dot-matrix-bg {
+  background-image: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.085) 1px,
+    transparent 1px
+  );
+  background-size: 20px 20px;
+}
+
+/* Animated flowing pulse keyframe for Relationship Graph isolated Bezier paths */
+@keyframes dash-flow {
+  from {
+    stroke-dashoffset: 32;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-dash-flow {
+  animation: dash-flow 1.15s linear infinite;
+}
+
+/* ==========================================================================
+   Circular-Expanding Theme Switch (View Transitions API + Graceful Fallback)
+   ========================================================================== */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 9999;
+}
+
+html.theme-fallback-transition,
+html.theme-fallback-transition body,
+html.theme-fallback-transition header,
+html.theme-fallback-transition main,
+html.theme-fallback-transition section {
+  transition:
+    background-color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ==========================================================================
+   Physical Anodized Metallic Cards & Nano-SIM Cut Geometry
+   ========================================================================== */
+
+.wallet-card-surface {
+  position: relative;
+  isolation: isolate;
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.42),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.24),
+    var(--card-shadow);
+  transition:
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 220ms ease;
+}
+
+.wallet-card-surface[data-active="true"] {
+  box-shadow:
+    inset 0 1px 0.5px rgba(255, 255, 255, 0.52),
+    inset 0 -1.5px 2px rgba(0, 0, 0, 0.28),
+    var(--card-shadow-active);
+}
+
+/* Embossed / Laser-Etched Physical Card Typography */
+.card-emboss-dark {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
+}
+
+.card-emboss-light {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.42);
+}
+
+/* Authentic Physical Right-Edge Semicircular Accessibility Notch (Wise Card) */
+.wise-card-notch {
+  -webkit-mask-image: radial-gradient(
+    circle 10.5px at 100% 50%,
+    transparent 10px,
+    #000 10.5px
+  );
+  mask-image: radial-gradient(
+    circle 10.5px at 100% 50%,
+    transparent 10px,
+    #000 10.5px
+  );
+}
+
+.wise-card-notch-compact {
+  -webkit-mask-image: radial-gradient(
+    circle 8.5px at 100% 50%,
+    transparent 8px,
+    #000 8.5px
+  );
+  mask-image: radial-gradient(
+    circle 8.5px at 100% 50%,
+    transparent 8px,
+    #000 8.5px
+  );
+}
+
+/* Sandblasted / CNC-anodized SVG fractal micro-noise texture */
+.card-micro-noise {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.045;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+}
+
+/* Brushed metal diagonal specular sheen */
+.wallet-card-sheen {
+  background:
+    linear-gradient(
+      128deg,
+      rgba(255, 255, 255, 0.16) 0%,
+      rgba(255, 255, 255, 0.03) 28%,
+      rgba(255, 255, 255, 0) 50%,
+      rgba(255, 255, 255, 0.08) 78%,
+      rgba(255, 255, 255, 0) 100%
+    );
+}
+
+.wallet-card-sheen-light {
+  background:
+    linear-gradient(
+      128deg,
+      rgba(255, 255, 255, 0.88) 0%,
+      rgba(255, 255, 255, 0.25) 34%,
+      rgba(0, 0, 0, 0.015) 56%,
+      rgba(255, 255, 255, 0.56) 84%,
+      rgba(255, 255, 255, 0) 100%
+    );
+}
+
+/* Subtle horizontal brushed-aluminum grain */
+.wallet-brushed-grain {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.018) 0px,
+    rgba(255, 255, 255, 0.018) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+/* Physical Nano-SIM top-right chamfered notch */
+.sim-card-chamfer {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 34px) 0,
+    100% 34px,
+    100% 100%,
+    0 100%
+  );
+}
+
+.sim-card-chamfer-inner {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 33px) 0,
+    100% 33px,
+    100% 100%,
+    0 100%
+  );
+}
+
+.sim-card-chamfer-compact {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 24px) 0,
+    100% 24px,
+    100% 100%,
+    0 100%
+  );
+}
+
+.sim-card-chamfer-compact-inner {
+  clip-path: polygon(
+    0 0,
+    calc(100% - 23px) 0,
+    100% 23px,
+    100% 100%,
+    0 100%
+  );
+}
+
+/* Outer drop-shadow wrapper for clipped SIM cards */
+.sim-card-drop {
+  filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.22));
+  transition: filter 260ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dark .sim-card-drop {
+  filter: drop-shadow(0 18px 32px rgba(0, 0, 0, 0.68));
+}
+
+.sim-card-drop[data-active="true"] {
+  filter: drop-shadow(0 24px 38px rgba(0, 0, 0, 0.32));
+}
+
+.dark .sim-card-drop[data-active="true"] {
+  filter: drop-shadow(0 26px 46px rgba(0, 0, 0, 0.85));
+}
+
+/* ==========================================================================
+   iPhone 17 Pro Max Safe Areas, Scroll Masks & Utilities
+   ========================================================================== */
+
+.safe-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.safe-pb {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-px {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+.mask-fade-right {
+  -webkit-mask-image: linear-gradient(to right, #000 0%, #000 88%, transparent 100%);
+  mask-image: linear-gradient(to right, #000 0%, #000 88%, transparent 100%);
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(113, 113, 122, 0.34) transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.thin-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.thin-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(113, 113, 122, 0.34);
+  border-radius: 9999px;
+}
+
+.privacy-masked-text {
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tactile-press {
+  transition: transform 110ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.tactile-press:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================================================
+   Reduced Transparency & Reduced Motion Accessibility (Apple iOS 26 HIG)
+   ========================================================================== */
+
+@media (prefers-reduced-transparency: reduce) {
+  .liquid-glass,
+  .surface-panel {
+    background-color: #FFFFFF !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(0, 0, 0, 0.14) !important;
+  }
+
+  .dark .liquid-glass,
+  .dark .surface-panel {
+    background-color: #121216 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-color: rgba(255, 255, 255, 0.16) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

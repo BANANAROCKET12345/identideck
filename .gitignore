@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Production & PWA build output
+dist/
+dist-ssr/
+
+# Local Netlify CLI state
+.netlify/
+
+# Environment & local secrets
+.env
+.env.*
+*.local
+
+# Logs & caches
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+.vite/
+coverage/
+
+# OS & editor junk
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
