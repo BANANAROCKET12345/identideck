@@ -12,9 +12,51 @@
 ![Zero Password](https://img.shields.io/badge/Zero_Passwords-AES--256--GCM-059669?style=flat-square)
 ![License MIT](https://img.shields.io/badge/License-MIT-52525B?style=flat-square)
 
-[**简体中文**](#-简体中文) · [**English**](#-english)
+[**界面实拍 / Screenshots**](#-界面实拍--screenshots) · [**简体中文**](#-简体中文) · [**English**](#-english)
+
+<br />
+
+<img src="docs/screenshots/desktop-wallet-dark.png" alt="IdentiDeck Wallet Dark Mode — Gmail, iCloud, 1:1 Maxis 5G Triple-Cut SIM & Maybank MAE" width="100%" />
+
+*Apple Wallet 风格身份卡包全景（深色模式）· Gmail / iCloud 官方图标 + 1:1 Maxis 5G 三合一实体 SIM + 1:1 实体银行卡*  
+*Apple Wallet-style Identity Deck (Dark Mode) · Official Gmail & iCloud logos + 1:1 Maxis 5G Triple-Cut SIM + 1:1 Physical Bank Cards*
 
 </div>
+
+---
+
+## 📸 界面实拍 / Screenshots
+
+<table>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/desktop-bank-cards.png" alt="1:1 Physical Bank Cards — Maybank MAE & GXBank Debit" width="100%" />
+      <br />
+      <b>1:1 真实实体银行卡 & 自动扣款追踪</b><br />
+      <sub>1:1 Physical Bank Cards (Maybank MAE & GXBank) & Auto-Debit Subscriptions</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/desktop-graph.png" alt="Dual-Link Interactive Relationship Graph" width="100%" />
+      <br />
+      <b>双链路账号关系图谱（登录身份 + 银行扣款）</b><br />
+      <sub>Dual-Link Relationship Graph (Login Identities + Bank Auto-Debit Curves)</sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/desktop-wallet-light.png" alt="Ceramic Light Mode Wallet Deck" width="100%" />
+      <br />
+      <b>极简陶瓷白浅色模式（View Transitions 扩散切换）</b><br />
+      <sub>Ceramic Light Mode (Smooth Circular View Transitions Theme Toggle)</sub>
+    </td>
+    <td align="center" width="50%">
+      <img src="docs/screenshots/mobile-iphone-17-pro-max.png" alt="iPhone 17 Pro Max Fullscreen Standalone PWA" width="215" />
+      <br />
+      <b>iPhone 17 Pro Max 实机全屏 PWA & 1:1 实体 SIM</b><br />
+      <sub>iPhone 17 Pro Max Standalone PWA (430×932 Safe Area & 1:1 Triple-Cut SIM)</sub>
+    </td>
+  </tr>
+</table>
 
 ---
 
