@@ -203,7 +203,7 @@ describe('IdentiDeck — AES-256-GCM E2EE Crypto & Zero-Password Guard', () => {
 
 describe('IdentiDeck — Privacy Mode Masking', () => {
   it('masks emails cleanly across length edge cases', () => {
-    expect(maskEmail('royyang8040@gmail.com')).toBe('ro***40@gmail.com');
+    expect(maskEmail('alex.chen88@gmail.com')).toBe('al***88@gmail.com');
     expect(maskEmail('ab@gmail.com')).toBe('a***@gmail.com');
     expect(maskEmail('a@x.io')).toBe('*@x.io');
     expect(maskEmail('alice@corp.my')).toBe('al***e@corp.my');

@@ -2,7 +2,7 @@ import type { IdentityType } from '../types/vault';
 
 /**
  * Smart email masking for Privacy Mode:
- * - "royyang8040@gmail.com" -> "ro***40@gmail.com"
+ * - "alex.chen88@gmail.com" -> "al***88@gmail.com"
  * - "ab@gmail.com" -> "a***@gmail.com"
  * - "a@x.io" -> "*@x.io"
  * - "alice@corp.my" -> "al***e@corp.my"

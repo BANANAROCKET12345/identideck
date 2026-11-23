@@ -1,6 +1,6 @@
 # IdentiDeck（身份卡包）· 项目交接文档 (`IDENTIDECK_HANDOFF.md`)
 
-> **项目路径**：`c:\Users\User\OneDrive\Desktop\hi\Projects\Web\identideck`  
+> **项目目录**：`identideck/`（本仓库根目录）  
 > **定位**：原创 MIT 协议、Apple Wallet 拟物质感账号身份与关系图谱 PWA（零密码存储，离线可用，端到端加密同步）
 
 ---
@@ -72,8 +72,7 @@ Projects/Web/identideck/
 ## 3. 常用开发、验证与部署命令
 
 ```powershell
-cd "c:\Users\User\OneDrive\Desktop\hi\Projects\Web\identideck"
-
+# 在仓库根目录执行
 npm run dev         # 启动本地热更新开发服务
 npm run typecheck   # TypeScript 严格类型校验 (tsc --noEmit)
 npm run test        # 运行 Vitest 全量单元测试
