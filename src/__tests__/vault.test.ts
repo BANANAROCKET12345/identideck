@@ -1,6 +1,13 @@
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { act, cleanup, fireEvent, render } from '@testing-library/react';
+import { createElement } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import {
+  AnimatedNumber,
+  MagneticButtonWrapper,
+  ScrambleText,
+} from '../components/MotionPrimitives';
 import {
   DEFAULT_PBKDF2_ITERATIONS,
   decryptVault,
@@ -1146,5 +1153,195 @@ describe('IdentiDeck — Renewal Countdown Engine & Bank Spend Breakdown', () =>
     )?.monthlyTotal;
     expect(summedMyr).toBe(globalMyr);
     expect(summedMyr).toBe(77.7);
+  });
+});
+
+describe('IdentiDeck — GPU Tactile Motion Primitives', () => {
+  afterEach(() => {
+    cleanup();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('AnimatedNumber renders initial value immediately, interpolates on updates, and cleans up rAF', () => {
+    const cancelSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
+    const queuedFrames: FrameRequestCallback[] = [];
+    let nextId = 1;
+    vi.spyOn(globalThis, 'requestAnimationFrame').mockImplementation((cb) => {
+      queuedFrames.push(cb);
+      return nextId++;
+    });
+
+    // Initial mount MUST render exact value immediately with zero animation
+    const { container, rerender, unmount } = render(
+      createElement(AnimatedNumber, {
+        value: 32.7,
+        decimals: 2,
+        durationMs: 320,
+      }),
+    );
+    expect(container.textContent).toBe('32.70');
+    expect(queuedFrames).toHaveLength(0);
+
+    // Trigger Monthly -> Annual value change
+    rerender(
+      createElement(AnimatedNumber, {
+        value: 392.4,
+        decimals: 2,
+        durationMs: 320,
+      }),
+    );
+    expect(queuedFrames).toHaveLength(1);
+
+    // Mid-flight frame moves smoothly between 32.70 and 392.40
+    act(() => {
+      queuedFrames.shift()!(1000);
+    });
+    act(() => {
+      queuedFrames.shift()!(1160);
+    });
+    const midVal = Number(container.textContent);
+    expect(midVal).toBeGreaterThan(32.7);
+    expect(midVal).toBeLessThan(392.4);
+
+    // Final frame settles cleanly on exact target value
+    act(() => {
+      queuedFrames.shift()!(1400);
+    });
+    expect(container.textContent).toBe('392.40');
+
+    // Start another update and unmount mid-flight -> cancels active rAF cleanly
+    rerender(
+      createElement(AnimatedNumber, {
+        value: 40,
+        decimals: 2,
+        durationMs: 320,
+      }),
+    );
+    unmount();
+    expect(cancelSpy).toHaveBeenCalled();
+  });
+
+  it('ScrambleText renders exact initial text, exposes sr-only text during cipher, and cleans up timers', () => {
+    vi.useFakeTimers();
+
+    const { container, rerender, unmount } = render(
+      createElement(ScrambleText, {
+        text: 'roy.dev@gmail.com',
+        triggerKey: false,
+      }),
+    );
+
+    // Initial mount shows exact text immediately with zero active timers
+    const srOnly = container.querySelector('.sr-only');
+    const visual = container.querySelector('[aria-hidden="true"]');
+    expect(srOnly?.textContent).toBe('roy.dev@gmail.com');
+    expect(visual?.textContent).toBe('roy.dev@gmail.com');
+    expect(vi.getTimerCount()).toBe(0);
+
+    // Toggling privacyMode starts crisp 190ms cipher while keeping sr-only semantic text exact
+    rerender(
+      createElement(ScrambleText, {
+        text: 'ro***ev@gmail.com',
+        triggerKey: true,
+      }),
+    );
+    expect(container.querySelector('.sr-only')?.textContent).toBe(
+      'ro***ev@gmail.com',
+    );
+    // Preserved structural characters ('@', '.') remain intact mid-scramble
+    const midVisual = container.querySelector('[aria-hidden="true"]')?.textContent ?? '';
+    expect(midVisual).toContain('@');
+    expect(midVisual).toContain('.');
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
+
+    // After 200ms, cipher settles cleanly onto exact target text with 0 pending timers
+    act(() => {
+      vi.advanceTimersByTime(220);
+    });
+    expect(container.querySelector('[aria-hidden="true"]')?.textContent).toBe(
+      'ro***ev@gmail.com',
+    );
+    expect(vi.getTimerCount()).toBe(0);
+
+    // Unmounting mid-scramble clears interval cleanly
+    rerender(
+      createElement(ScrambleText, {
+        text: 'roy.dev@gmail.com',
+        triggerKey: false,
+      }),
+    );
+    expect(vi.getTimerCount()).toBeGreaterThan(0);
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it('respects prefers-reduced-motion across AnimatedNumber, ScrambleText, and MagneticButtonWrapper', () => {
+    vi.useFakeTimers();
+    const matchMediaMock = vi.fn().mockImplementation((query: string) => ({
+      matches: query === '(prefers-reduced-motion: reduce)' || query === '(pointer: fine)',
+      media: query,
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      addListener: vi.fn(),
+      removeListener: vi.fn(),
+      onchange: null,
+      dispatchEvent: vi.fn(),
+    }));
+    vi.stubGlobal('matchMedia', matchMediaMock);
+
+    const { container, rerender } = render(
+      createElement(
+        'div',
+        null,
+        createElement(AnimatedNumber, {
+          value: 20,
+          decimals: 0,
+          format: (n) => `$${n}`,
+        }),
+        createElement(ScrambleText, {
+          text: '+60 12-345 6789',
+          triggerKey: false,
+        }),
+        createElement(
+          MagneticButtonWrapper,
+          null,
+          createElement('button', { type: 'button' }, 'Add'),
+        ),
+      ),
+    );
+
+    rerender(
+      createElement(
+        'div',
+        null,
+        createElement(AnimatedNumber, {
+          value: 240,
+          decimals: 0,
+          format: (n) => `$${n}`,
+        }),
+        createElement(ScrambleText, {
+          text: '+60 12-••• ••89',
+          triggerKey: true,
+        }),
+        createElement(
+          MagneticButtonWrapper,
+          null,
+          createElement('button', { type: 'button' }, 'Add'),
+        ),
+      ),
+    );
+
+    // Zero scramble timers queued and immediate snap under reduced motion
+    expect(vi.getTimerCount()).toBe(0);
+    expect(container.textContent).toContain('$240');
+    expect(container.querySelector('[aria-hidden="true"]')?.textContent).toBe(
+      '+60 12-••• ••89',
+    );
+
+    // MagneticButtonWrapper remains locked at translate3d(0px, 0px, 0) under reduced motion
+    const magneticEl = container.querySelector('button')?.parentElement as HTMLDivElement;
+    fireEvent.mouseMove(magneticEl, { clientX: 50, clientY: 50 });
+    expect(magneticEl.style.transform).toBe('translate3d(0px, 0px, 0)');
   });
 });

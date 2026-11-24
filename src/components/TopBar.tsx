@@ -23,6 +23,7 @@ import {
 import { useT } from '../i18n/translations';
 import { useVaultStore } from '../store/useVaultStore';
 import type { ThemeMode } from '../types/vault';
+import { usePrefersReducedMotion } from './MotionPrimitives';
 
 export interface TopBarProps {
   onOpenSearch: () => void;
@@ -45,6 +46,7 @@ const SPRING_TAB = {
 
 export function TopBar({ onOpenSearch, onOpenSync }: TopBarProps) {
   const { t, language } = useT();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const activeView = useVaultStore((s) => s.activeView);
   const setActiveView = useVaultStore((s) => s.setActiveView);
@@ -282,16 +284,35 @@ export function TopBar({ onOpenSearch, onOpenSync }: TopBarProps) {
                 aria-label={privacyMode ? t('privacyModeOn') : t('privacyModeOff')}
                 title={privacyMode ? t('privacyModeOn') : t('privacyModeOff')}
                 data-testid="privacy-toggle"
-                className={`inline-flex h-8.5 w-8.5 items-center justify-center rounded-full transition-colors duration-200 ${
+                className={`tactile-press inline-flex h-8.5 w-8.5 items-center justify-center rounded-full transition-colors duration-200 ${
                   privacyMode
                     ? 'bg-emerald-500/15 text-emerald-700 ring-1 ring-inset ring-emerald-500/30 dark:bg-emerald-500/18 dark:text-emerald-300 dark:ring-emerald-400/30'
                     : 'bg-black/[0.045] text-[#52525B] hover:bg-black/[0.08] hover:text-[#111113] dark:bg-white/[0.06] dark:text-[#A1A1AA] dark:hover:bg-white/[0.11] dark:hover:text-[#FAFAFA]'
                 }`}
               >
-                {privacyMode ? (
-                  <EyeOff className="h-4 w-4" />
+                {prefersReducedMotion ? (
+                  privacyMode ? (
+                    <EyeOff className="h-4 w-4" />
+                  ) : (
+                    <Eye className="h-4 w-4" />
+                  )
                 ) : (
-                  <Eye className="h-4 w-4" />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.span
+                      key={privacyMode ? 'privacy-on' : 'privacy-off'}
+                      initial={{ opacity: 0, scale: 0.78 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.78 }}
+                      transition={{ duration: 0.12, ease: [0.22, 1, 0.36, 1] }}
+                      className="inline-flex items-center justify-center"
+                    >
+                      {privacyMode ? (
+                        <EyeOff className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </motion.span>
+                  </AnimatePresence>
                 )}
               </button>
 

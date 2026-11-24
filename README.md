@@ -87,8 +87,8 @@
   - 绑定服务时主动检测其他身份是否已开通同类付费会员；换号、挂失或换银行卡时一键生成交互式解绑/改绑进度环清单，并支持一键复制 Markdown。
 - **极速 Spotlight 搜索（`Cmd/Ctrl + K`）**
   - 1 秒反查 App、邮箱、手机号、银行卡及尾号，支持回车跳转卡包或一键聚焦关系图谱。
-- **一键隐私打码 + 圆形扩散深浅色切换 + 右上角快捷设置 + 中英双语**
-  - 基于 `View Transitions API` 的平滑主题切换（遵循 `prefers-reduced-motion`）；完整适配桌面端（`1440×900`）与 **iPhone 17 Pro Max（`430×932`）** 安全区。
+- **一键隐私打码 + 臻选 GPU 微动效体系 + 圆形扩散深浅色切换 + 中英双语**
+  - 全站遵循 `100–200ms` 微交互、纯 `transform/opacity` GPU 合成与 `prefers-reduced-motion` 无障碍降级：涵盖 **3D 倾斜 + 鼠标聚光灯、切卡单次流光扫过、隐私打码文字解码、月/年账单数字递增、Bento 错峰入场与滚动显现、紧急续费（≤2天）边缘流光、桌面端主按钮磁吸反馈、`⌘K` 搜索打字机提示**，以及 `View Transitions API` 圆形扩散主题切换；完整适配桌面端（`1440×900`）与 **iPhone 17 Pro Max（`430×932`）** 安全区。
 - **零信任端到端加密同步**
   - 本地 `IndexedDB` 优先存储 + Workbox 全量本地资源离线缓存；浏览器原生 `Web Crypto API` 执行随机 16-byte Salt + `PBKDF2-SHA256`（250,000 次迭代）+ 随机 12-byte IV + `AES-256-GCM` 认证加密，直连同步至个人 **GitHub Private Gist** 或 **Gitee Private Gist**，支持明文 / `.identideck.json` 加密本地备份导入导出。
 
@@ -103,7 +103,7 @@ npm install
 # 2. 启动本地开发服务器
 npm run dev
 
-# 3. 严格类型检查 + 31 项单元测试 + 生产 PWA 构建
+# 3. 严格类型检查 + 34 项单元测试 + 生产 PWA 构建
 npm run typecheck
 npm run test
 npm run build
@@ -153,8 +153,8 @@ Password managers store credentials, yet rarely answer these three everyday ques
   - Warns before creating duplicate paid subscriptions across cards; generates an interactive migration checklist with progress ring and one-click Markdown export whenever you swap numbers or replace a bank card.
 - **Spotlight Command Search (`Cmd/Ctrl + K`)**
   - Instant reverse lookup across apps, emails, phone numbers, banks, and last-4 digits — jump straight to Wallet or isolate directly in Graph view.
-- **Privacy Masking + Circular Theme Transition + Top-Right Settings + Full Bilingual UI**
-  - One-click sensitive identifier masking, `View Transitions API` circular dark/light reveal (respecting `prefers-reduced-motion`), and full **Desktop (`1440×900`)** & **iPhone 17 Pro Max (`430×932`)** safe-area polish.
+- **Privacy Masking + GPU Tactile Micro-Motions + Circular Theme Transition + Full Bilingual UI**
+  - Engineered around `100–200ms` micro-interactions, composite-only `transform/opacity`, and strict `prefers-reduced-motion` degradation: **3D card tilt + cursor spotlight, one-shot specular card shimmer sweep, 189ms privacy text scramble (`sr-only` accessible), smooth `tabular-nums` monthly/annual count-up, staggered Bento entrance & scroll reveal, urgent renewal (≤2d) rotating conic border beam, magnetic primary CTA, Spotlight typewriter hints**, and `View Transitions API` circular dark/light reveal — tuned for **Desktop (`1440×900`)** & **iPhone 17 Pro Max (`430×932`)** safe areas.
 - **Zero-Trust End-to-End Encrypted Sync**
   - Local-first `IndexedDB` + Workbox offline caching; browser-native `Web Crypto API` (`PBKDF2-SHA256` 250k iterations + random 16-byte salt + 12-byte IV + `AES-256-GCM`) syncing directly to your personal **GitHub Private Gist** or **Gitee Private Gist**, plus encrypted `.identideck.json` local backup import/export.
 
@@ -169,7 +169,7 @@ Password managers store credentials, yet rarely answer these three everyday ques
 | State & Offline / 状态与离线存储 | Zustand + `idb` (IndexedDB w/ `localStorage` fallback) + `vite-plugin-pwa` (Workbox) |
 | Drag & Drop / 拖拽交互 | `@dnd-kit/core` + `@dnd-kit/sortable` |
 | Crypto & Sync / 加密与同步 | Native Web Crypto API (`PBKDF2-SHA256` + `AES-256-GCM`) + GitHub / Gitee Gist REST API |
-| QA & Hosting / 测试与部署 | Vitest (31 unit tests) + Netlify (`netlify.toml` SPA & PWA headers preconfigured) |
+| QA & Hosting / 测试与部署 | Vitest (34 unit tests) + Netlify (`netlify.toml` SPA & PWA headers preconfigured) |
 
 ---
 

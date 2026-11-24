@@ -24,6 +24,7 @@ import {
 } from '../types/vault';
 import { formatIdentityIdentifier } from '../utils/mask';
 import { BankCardArtwork } from './BankCardArtwork';
+import { ScrambleText } from './MotionPrimitives';
 import { ServiceBadge } from './ServiceBadge';
 import { SimCardArtwork } from './SimCardArtwork';
 
@@ -516,8 +517,17 @@ export function IdentityCardVisual({
 }: IdentityCardVisualProps) {
   const { t, language } = useT();
   const cardRef = useRef<HTMLDivElement>(null);
+  const wasActiveRef = useRef<boolean>(isActive);
+  const [shimmerSeed, setShimmerSeed] = useState(0);
   const [tilt, setTilt] = useState({ rx: 0, ry: 0, gx: 50, gy: 50, active: false });
   const [photoFailed, setPhotoFailed] = useState(false);
+
+  useEffect(() => {
+    if (!compact && isActive && !wasActiveRef.current) {
+      setShimmerSeed((seed) => seed + 1);
+    }
+    wasActiveRef.current = isActive;
+  }, [isActive, compact]);
 
   useEffect(() => {
     setPhotoFailed(false);
@@ -682,6 +692,13 @@ export function IdentityCardVisual({
             background: `radial-gradient(240px circle at ${tilt.gx}% ${tilt.gy}%, rgba(255,255,255,0.28), transparent 64%)`,
           }}
         />
+        {shimmerSeed > 0 && (
+          <span
+            key={shimmerSeed}
+            aria-hidden="true"
+            className="card-shimmer-sweep z-[5]"
+          />
+        )}
 
         {/* Subtle bottom gradient feather so floating personal badges stay razor-sharp on any real card */}
         <div
@@ -717,7 +734,7 @@ export function IdentityCardVisual({
                   privacyMode ? 'privacy-masked-text' : ''
                 }`}
               >
-                {shortCardLast4}
+                <ScrambleText text={shortCardLast4} triggerKey={privacyMode} />
               </span>
             </div>
           )}
@@ -732,7 +749,7 @@ export function IdentityCardVisual({
                     privacyMode ? 'privacy-masked-text' : ''
                   }`}
                 >
-                  {shortCardLast4}
+                  <ScrambleText text={shortCardLast4} triggerKey={privacyMode} />
                 </span>
               )}
             </div>
@@ -804,6 +821,13 @@ export function IdentityCardVisual({
             }), transparent 65%)`,
           }}
         />
+        {shimmerSeed > 0 && (
+          <span
+            key={shimmerSeed}
+            aria-hidden="true"
+            className="card-shimmer-sweep z-[5]"
+          />
+        )}
 
         {/* Top Row: Real Official Bank Logo + Bank Name + DEBIT/CREDIT + Edition + NFC + Drag Grip */}
         <div className="relative z-10 flex items-center justify-between gap-2">
@@ -913,7 +937,7 @@ export function IdentityCardVisual({
             }`}
             style={{ color: cardInk }}
           >
-            {formattedIdentifier}
+            <ScrambleText text={formattedIdentifier} triggerKey={privacyMode} />
           </p>
         </div>
 
@@ -1177,6 +1201,13 @@ export function IdentityCardVisual({
                 }), transparent 65%)`,
               }}
             />
+            {shimmerSeed > 0 && (
+              <span
+                key={shimmerSeed}
+                aria-hidden="true"
+                className="card-shimmer-sweep z-[5]"
+              />
+            )}
 
             {!simSkin && (
               <svg
@@ -1267,7 +1298,7 @@ export function IdentityCardVisual({
                     privacyMode ? 'privacy-masked-text' : ''
                   }`}
                 >
-                  {formattedIdentifier}
+                  <ScrambleText text={formattedIdentifier} triggerKey={privacyMode} />
                 </p>
                 {simSkin && !compact && (
                   <p
@@ -1384,6 +1415,13 @@ export function IdentityCardVisual({
           }), transparent 65%)`,
         }}
       />
+      {shimmerSeed > 0 && (
+        <span
+          key={shimmerSeed}
+          aria-hidden="true"
+          className="card-shimmer-sweep z-[5]"
+        />
+      )}
 
       <svg
         viewBox="0 0 180 180"
@@ -1447,7 +1485,7 @@ export function IdentityCardVisual({
             compact ? 'text-xs' : 'text-[13px]'
           } ${secondaryText} ${privacyMode ? 'privacy-masked-text' : ''}`}
         >
-          {formattedIdentifier}
+          <ScrambleText text={formattedIdentifier} triggerKey={privacyMode} />
         </p>
       </div>
 

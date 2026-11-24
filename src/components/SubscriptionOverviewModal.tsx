@@ -20,6 +20,7 @@ import {
   getUpcomingRenewals,
   type RenewalUrgency,
 } from '../utils/renewal';
+import { AnimatedNumber } from './MotionPrimitives';
 import { IdentityLogoBadge, ServiceBadge } from './ServiceBadge';
 
 export interface SubscriptionOverviewModalProps {
@@ -250,7 +251,11 @@ export function SubscriptionOverviewModal({
                             {item.currency}
                           </span>
                           <span className="font-mono text-2xl sm:text-[30px] font-bold tracking-tight tabular-nums text-[#111113] dark:text-[#FAFAFA]">
-                            {formatAmount(value)}
+                            <AnimatedNumber
+                              value={value}
+                              decimals={Number.isInteger(value) ? 0 : 2}
+                              durationMs={320}
+                            />
                           </span>
                           <span className="text-xs font-medium text-[#71717A] dark:text-[#8E8E98]">
                             {unit}
@@ -282,22 +287,6 @@ export function SubscriptionOverviewModal({
                         row.bindingCount === 0
                           ? 0
                           : Math.max(8, Math.round((weight / maxRowWeight) * 100));
-
-                      const spendStrings = row.totals.map((item) => {
-                        const val = isAnnual
-                          ? item.yearlyTotal
-                          : item.monthlyTotal > 0
-                            ? item.monthlyTotal
-                            : item.lifetimeTotal;
-                        const suffix = isAnnual
-                          ? t('subOverviewPerYear')
-                          : item.monthlyTotal > 0
-                            ? language === 'zh'
-                              ? '/月'
-                              : '/mo'
-                            : '';
-                        return `${item.currency} ${formatAmount(val)}${suffix}`;
-                      });
 
                       const rowContent = (
                         <>
@@ -345,8 +334,33 @@ export function SubscriptionOverviewModal({
 
                             <div className="flex shrink-0 items-center gap-1.5">
                               <span className="font-mono text-xs font-semibold tabular-nums text-[#111113] dark:text-[#FAFAFA]">
-                                {spendStrings.length > 0
-                                  ? spendStrings.join(' + ')
+                                {row.totals.length > 0
+                                  ? row.totals.map((item, idx) => {
+                                      const val = isAnnual
+                                        ? item.yearlyTotal
+                                        : item.monthlyTotal > 0
+                                          ? item.monthlyTotal
+                                          : item.lifetimeTotal;
+                                      const suffix = isAnnual
+                                        ? t('subOverviewPerYear')
+                                        : item.monthlyTotal > 0
+                                          ? language === 'zh'
+                                            ? '/月'
+                                            : '/mo'
+                                          : '';
+                                      return (
+                                        <span key={item.currency}>
+                                          {idx > 0 && ' + '}
+                                          {item.currency}{' '}
+                                          <AnimatedNumber
+                                            value={val}
+                                            decimals={Number.isInteger(val) ? 0 : 2}
+                                            durationMs={320}
+                                          />
+                                          {suffix}
+                                        </span>
+                                      );
+                                    })
                                   : '—'}
                               </span>
                               {bank && (

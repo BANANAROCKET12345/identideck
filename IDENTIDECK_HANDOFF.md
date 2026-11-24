@@ -32,7 +32,8 @@ Projects/Web/identideck/
     ├── i18n/translations.ts          # 简体中文 (`zh`) / 英文 (`en`) 完整双语字典与 `useT()` Hook
     ├── store/useVaultStore.ts        # Zustand 全局状态（CRUD / 银行卡双链路扣款 / 拖拽重排 / 6秒撤销栈 / 防重守卫 / 迁移统计 / 同步）
     ├── components/
-    │   ├── TopBar.tsx                # 液态玻璃浮岛顶栏 + 右上角设置齿轮菜单 + iPhone 底部悬浮导航栏
+    │   ├── TopBar.tsx                # 液态玻璃浮岛顶栏 + 右上角设置齿轮菜单 + 隐私切换图标微动效 + iPhone 底部悬浮导航栏
+    │   ├── MotionPrimitives.tsx      # GPU 通用微动效原语（`AnimatedNumber` 数字递增、`ScrambleText` 隐私解码、`MagneticButtonWrapper` 磁吸按钮、`usePrefersReducedMotion`）
     │   ├── ServiceBadge.tsx          # 统一真实官方 Logo 徽标（`ServiceBadge` + 全站通用 `IdentityLogoBadge`）
     │   ├── BankCardArtwork.tsx       # 52 家银行专属 1:1 实体卡矢量花纹层（Maybank MAE、GXBank 紫红边黑卡、CIMB 棱面、Wise 盲文缺口等）
     │   ├── SimCardArtwork.tsx        # 11 家运营商 1:1 实体三合一 5G USIM 塑料卡面层（含 Standard/Micro/Nano 冲切凹槽与各家品牌丝印/珍珠白PVC卡体）
@@ -47,7 +48,7 @@ Projects/Web/identideck/
     │   ├── CommandSearchModal.tsx    # Cmd/Ctrl + K 全局极速反查弹窗（支持 App / 邮箱 / 手机 / 银行 / 卡尾号）
     │   └── UndoToast.tsx             # 6 秒倒计时撤销删除悬浮提示条
     ├── App.tsx & main.tsx            # 应用主壳、IndexedDB 水合、全局快捷键、PWA Service Worker 注册
-    └── __tests__/vault.test.ts       # Vitest 31 项全量单元测试（加解密/零密码禁存/73 官方Logo磁盘校验/46 实体卡图/双链路计费/续费倒计时）
+    └── __tests__/vault.test.ts       # Vitest 34 项全量单元测试（加解密/零密码禁存/73 官方Logo磁盘校验/46 实体卡图/双链路计费/续费倒计时/微动效与减少动态降级）
 ```
 
 ---

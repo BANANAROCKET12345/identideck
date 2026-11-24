@@ -63,6 +63,12 @@ import {
   type RenewalUrgency,
 } from '../utils/renewal';
 import { IdentityCardVisual } from './IdentityCardVisual';
+import {
+  AnimatedNumber,
+  MagneticButtonWrapper,
+  ScrambleText,
+  usePrefersReducedMotion,
+} from './MotionPrimitives';
 import { IdentityLogoBadge, ServiceBadge } from './ServiceBadge';
 
 export interface WalletDeckProps {
@@ -122,27 +128,6 @@ function getAuthBadgeStyle(method: AuthMethod): string {
 
 function formatPriceAmount(amount: number): string {
   return Number.isInteger(amount) ? amount.toString() : amount.toFixed(2);
-}
-
-function formatGlobalTotals(
-  totals: CurrencySubtotal[],
-  lang: 'zh' | 'en',
-): string | null {
-  const parts = totals
-    .filter((item) => item.monthlyTotal > 0 || item.lifetimeTotal > 0)
-    .map((item) => {
-      const amt = formatPriceAmount(
-        item.monthlyTotal > 0 ? item.monthlyTotal : item.lifetimeTotal,
-      );
-      return `${item.currency} ${amt}`;
-    });
-  if (parts.length === 0) return null;
-  const suffix = totals.some((item) => item.monthlyTotal > 0)
-    ? lang === 'zh'
-      ? '/月'
-      : '/mo'
-    : '';
-  return `${parts.join(' + ')}${suffix}`;
 }
 
 function SortableIdentityItem({
@@ -219,6 +204,7 @@ export function WalletDeck({
   highlightedBindingId,
 }: WalletDeckProps) {
   const { t, language } = useT();
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const identities = useVaultStore((s) => s.identities);
   const bindings = useVaultStore((s) => s.bindings);
@@ -293,9 +279,12 @@ export function WalletDeck({
     () => computeSubscriptionTotals(bindings),
     [bindings],
   );
-  const globalSpendText = useMemo(
-    () => formatGlobalTotals(globalSubscriptionTotals, language),
-    [globalSubscriptionTotals, language],
+  const activeGlobalTotals = useMemo(
+    () =>
+      globalSubscriptionTotals.filter(
+        (item) => item.monthlyTotal > 0 || item.lifetimeTotal > 0,
+      ),
+    [globalSubscriptionTotals],
   );
 
   const perIdentityMeta = useMemo(() => {
@@ -547,7 +536,7 @@ export function WalletDeck({
               <h1 className="text-2xl sm:text-[28px] font-semibold tracking-[-0.03em] text-[#111113] dark:text-[#FAFAFA]">
                 {t('walletTitle')}
               </h1>
-              {globalSpendText && (
+              {activeGlobalTotals.length > 0 && (
                 <button
                   type="button"
                   onClick={() => onOpenSubOverview?.()}
@@ -559,7 +548,29 @@ export function WalletDeck({
                   <span className="font-sans text-[#52525B] dark:text-[#A1A1AA]">
                     {t('globalSpendLabel')}:
                   </span>
-                  <span className="tabular-nums">{globalSpendText}</span>
+                  <span className="tabular-nums">
+                    {activeGlobalTotals.map((item, idx) => {
+                      const val =
+                        item.monthlyTotal > 0
+                          ? item.monthlyTotal
+                          : item.lifetimeTotal;
+                      return (
+                        <span key={item.currency}>
+                          {idx > 0 && ' + '}
+                          {item.currency}{' '}
+                          <AnimatedNumber
+                            value={val}
+                            decimals={Number.isInteger(val) ? 0 : 2}
+                          />
+                        </span>
+                      );
+                    })}
+                    {activeGlobalTotals.some((item) => item.monthlyTotal > 0)
+                      ? language === 'zh'
+                        ? '/月'
+                        : '/mo'
+                      : ''}
+                  </span>
                   <ChevronRight className="h-3 w-3 text-[#71717A] transition-transform group-hover:translate-x-0.5 dark:text-[#8E8E98]" />
                 </button>
               )}
@@ -572,15 +583,17 @@ export function WalletDeck({
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={onAddIdentity}
-            data-testid="add-identity-btn"
-            className="tactile-press inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#111113] px-4 text-xs sm:text-[13px] font-medium text-white shadow-xs transition-colors hover:bg-[#27272A] dark:bg-[#FAFAFA] dark:text-[#09090B] dark:hover:bg-[#E4E4E7]"
-          >
-            <Plus className="h-4 w-4" />
-            <span>{t('addIdentityCard')}</span>
-          </button>
+          <MagneticButtonWrapper className="shrink-0">
+            <button
+              type="button"
+              onClick={onAddIdentity}
+              data-testid="add-identity-btn"
+              className="tactile-press inline-flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#111113] px-4 text-xs sm:text-[13px] font-medium text-white shadow-xs transition-colors hover:bg-[#27272A] dark:bg-[#FAFAFA] dark:text-[#09090B] dark:hover:bg-[#E4E4E7]"
+            >
+              <Plus className="h-4 w-4" />
+              <span>{t('addIdentityCard')}</span>
+            </button>
+          </MagneticButtonWrapper>
         </div>
 
         {/* Clean 3-in-1 Card Type Filter Pills (All / Email / SIM / Bank) */}
@@ -783,10 +796,14 @@ export function WalletDeck({
           {activeIdentity && (
             <motion.section
               key={activeIdentity.id}
-              initial={{ opacity: 0, y: 6 }}
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -4 }}
-              transition={{ duration: 0.16, ease: [0.22, 1, 0.36, 1] }}
+              exit={prefersReducedMotion ? undefined : { opacity: 0, y: -4 }}
+              transition={
+                prefersReducedMotion
+                  ? { duration: 0 }
+                  : { duration: 0.16, ease: [0.22, 1, 0.36, 1] }
+              }
               className="space-y-5 pt-2"
             >
               {/* Editorial Active Card Header Bar */}
@@ -811,26 +828,31 @@ export function WalletDeck({
                       </span>
                     </span>
 
-                    {activeTotals.map((sub) => (
-                      <span
-                        key={sub.currency}
-                        className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-500/20 dark:bg-emerald-500/14 dark:text-emerald-300 dark:ring-emerald-400/20"
-                      >
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        <span>
-                          {isBankActive && `${t('bankMonthlyAutoDebit')}: `}
-                          {sub.currency}{' '}
-                          {formatPriceAmount(
-                            sub.monthlyTotal > 0 ? sub.monthlyTotal : sub.lifetimeTotal,
-                          )}
-                          {sub.monthlyTotal > 0
-                            ? language === 'zh'
-                              ? '/月'
-                              : '/mo'
-                            : ''}
+                    {activeTotals.map((sub) => {
+                      const val =
+                        sub.monthlyTotal > 0 ? sub.monthlyTotal : sub.lifetimeTotal;
+                      return (
+                        <span
+                          key={sub.currency}
+                          className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-500/20 dark:bg-emerald-500/14 dark:text-emerald-300 dark:ring-emerald-400/20"
+                        >
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                          <span>
+                            {isBankActive && `${t('bankMonthlyAutoDebit')}: `}
+                            {sub.currency}{' '}
+                            <AnimatedNumber
+                              value={val}
+                              decimals={Number.isInteger(val) ? 0 : 2}
+                            />
+                            {sub.monthlyTotal > 0
+                              ? language === 'zh'
+                                ? '/月'
+                                : '/mo'
+                              : ''}
+                          </span>
                         </span>
-                      </span>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -844,12 +866,15 @@ export function WalletDeck({
                           privacyMode ? 'privacy-masked-text' : ''
                         }`}
                       >
-                        {formatIdentityIdentifier(
-                          activeIdentity.identifier,
-                          activeIdentity.type,
-                          privacyMode,
-                          { last4: activeIdentity.cardLast4, compact: true },
-                        )}
+                        <ScrambleText
+                          text={formatIdentityIdentifier(
+                            activeIdentity.identifier,
+                            activeIdentity.type,
+                            privacyMode,
+                            { last4: activeIdentity.cardLast4, compact: true },
+                          )}
+                          triggerKey={privacyMode}
+                        />
                       </span>
                       {!privacyMode && activeIdentity.type !== 'bank' && (
                         <button
@@ -1013,7 +1038,7 @@ export function WalletDeck({
                 </div>
               ) : (
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {filteredBindingLinks.map(({ binding, linkKind }) => {
+                  {filteredBindingLinks.map(({ binding, linkKind }, idx) => {
                     const catalog = getServiceById(
                       binding.serviceId,
                       binding.serviceName,
@@ -1052,13 +1077,50 @@ export function WalletDeck({
                       privacyMode,
                     );
                     const isCopied = copiedBindingId === binding.id;
+                    const isImmediateBento = idx < 6;
 
                     return (
-                      <article
+                      <motion.article
                         key={binding.id}
                         data-binding-id={binding.id}
                         role="button"
                         tabIndex={0}
+                        initial={
+                          prefersReducedMotion
+                            ? false
+                            : { opacity: 0, y: isImmediateBento ? 6 : 8 }
+                        }
+                        animate={
+                          prefersReducedMotion || isImmediateBento
+                            ? { opacity: 1, y: 0 }
+                            : undefined
+                        }
+                        whileInView={
+                          !prefersReducedMotion && !isImmediateBento
+                            ? { opacity: 1, y: 0 }
+                            : undefined
+                        }
+                        viewport={
+                          !prefersReducedMotion && !isImmediateBento
+                            ? { once: true, margin: '-24px' }
+                            : undefined
+                        }
+                        transition={
+                          prefersReducedMotion
+                            ? { duration: 0 }
+                            : isImmediateBento
+                              ? {
+                                  duration: 0.16,
+                                  delay: idx * 0.028,
+                                  ease: [0.22, 1, 0.36, 1],
+                                }
+                              : {
+                                  duration: 0.18,
+                                  ease: [0.22, 1, 0.36, 1],
+                                }
+                        }
+                        whileHover={prefersReducedMotion ? undefined : { y: -2 }}
+                        whileTap={prefersReducedMotion ? undefined : { scale: 0.985 }}
                         onClick={() => onEditBinding(binding)}
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
@@ -1066,12 +1128,15 @@ export function WalletDeck({
                             onEditBinding(binding);
                           }
                         }}
-                        className={`group liquid-glass relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-[22px] p-4 transition-all duration-200 hover:-translate-y-0.5 active:scale-[0.985] ${
+                        className={`group liquid-glass relative flex cursor-pointer flex-col justify-between overflow-hidden rounded-[22px] p-4 transition-[border-color,box-shadow] duration-200 ${
                           isHighlighted
                             ? 'ring-2 ring-[#111113] dark:ring-[#FAFAFA]'
                             : ''
                         }`}
                       >
+                        {renewalInfo?.urgency === 'urgent' && (
+                          <span aria-hidden="true" className="urgent-border-beam z-20" />
+                        )}
                         <div>
                           {/* Top Row: Real Official Logo Squircle + Name + 1-Click Copy/Edit/Delete */}
                           <div className="flex items-start justify-between gap-2">
@@ -1276,7 +1341,10 @@ export function WalletDeck({
                                     : 'text-[#111113] dark:text-[#FAFAFA]'
                                 }`}
                               >
-                                {maskedAccount}
+                                <ScrambleText
+                                  text={maskedAccount}
+                                  triggerKey={privacyMode}
+                                />
                               </span>
                             </div>
                           )}
@@ -1318,7 +1386,7 @@ export function WalletDeck({
                             </div>
                           </>
                         )}
-                      </article>
+                      </motion.article>
                     );
                   })}
                 </div>

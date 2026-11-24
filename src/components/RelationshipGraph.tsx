@@ -39,6 +39,7 @@ import {
   getRenewalCountdown,
   type RenewalCountdownInfo,
 } from '../utils/renewal';
+import { ScrambleText } from './MotionPrimitives';
 import { IdentityLogoBadge, ServiceBadge } from './ServiceBadge';
 
 export type GraphFocusTarget =
@@ -951,12 +952,15 @@ export function RelationshipGraph({
                       </span>
                     </div>
                     <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
-                      {formatIdentityIdentifier(
-                        focusedIdentity.identifier,
-                        focusedIdentity.type,
-                        privacyMode,
-                        { last4: focusedIdentity.cardLast4, compact: true },
-                      )}
+                      <ScrambleText
+                        text={formatIdentityIdentifier(
+                          focusedIdentity.identifier,
+                          focusedIdentity.type,
+                          privacyMode,
+                          { last4: focusedIdentity.cardLast4, compact: true },
+                        )}
+                        triggerKey={privacyMode}
+                      />
                     </p>
                   </div>
                 </>
@@ -1416,7 +1420,7 @@ export function RelationshipGraph({
                           </span>
                         </div>
                         <p className="mt-0.5 truncate font-mono text-[10px] text-zinc-500 sm:text-xs dark:text-zinc-400">
-                          {formattedId}
+                          <ScrambleText text={formattedId} triggerKey={privacyMode} />
                         </p>
                       </div>
                     </div>
@@ -1537,6 +1541,11 @@ export function RelationshipGraph({
                           : 'border-black/[0.07] bg-white/86 shadow-[0_1px_2px_rgba(0,0,0,0.03)] hover:border-black/15 hover:bg-white hover:shadow-[0_8px_20px_-12px_rgba(0,0,0,0.14)] dark:border-white/[0.08] dark:bg-[#121216]/84 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.06)] dark:hover:border-white/18 dark:hover:bg-[#16161B]'
                     }`}
                   >
+                    {/* Subtle GPU Perimeter Beam for Urgent Renewals (<= 2d) */}
+                    {group.soonestRenewal?.urgency === 'urgent' && (
+                      <span aria-hidden="true" className="urgent-border-beam" />
+                    )}
+
                     {/* Left-Edge Precision Anchor Dot */}
                     <span
                       ref={(el) => {
@@ -1580,7 +1589,13 @@ export function RelationshipGraph({
 
                         {primaryBinding?.accountName && !isMultiAccount && (
                           <p className="mt-0.5 truncate font-mono text-[10px] text-zinc-500 sm:text-xs dark:text-zinc-400">
-                            {formatAccountName(primaryBinding.accountName, privacyMode)}
+                            <ScrambleText
+                              text={formatAccountName(
+                                primaryBinding.accountName,
+                                privacyMode,
+                              )}
+                              triggerKey={privacyMode}
+                            />
                           </p>
                         )}
 
@@ -1622,12 +1637,15 @@ export function RelationshipGraph({
                             <span className="hidden items-center gap-1 rounded-md bg-amber-500/12 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-800 sm:inline-flex dark:bg-amber-400/14 dark:text-amber-300">
                               <CreditCard className="h-2.5 w-2.5" />
                               {linkedBankCard.bankName || linkedBankCard.label}{' '}
-                              {formatIdentityIdentifier(
-                                linkedBankCard.identifier,
-                                'bank',
-                                privacyMode,
-                                { last4: linkedBankCard.cardLast4, compact: true },
-                              )}
+                              <ScrambleText
+                                text={formatIdentityIdentifier(
+                                  linkedBankCard.identifier,
+                                  'bank',
+                                  privacyMode,
+                                  { last4: linkedBankCard.cardLast4, compact: true },
+                                )}
+                                triggerKey={privacyMode}
+                              />
                             </span>
                           )}
                         </div>

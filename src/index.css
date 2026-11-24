@@ -446,6 +446,95 @@ html.theme-fallback-transition section {
 }
 
 /* ==========================================================================
+   GPU-Composited Tactile Micro-Motion Utilities (Transform & Opacity Only)
+   ========================================================================== */
+
+@keyframes card-shimmer-sweep-kf {
+  0% {
+    transform: translate3d(-140%, 0, 0) skewX(-22deg);
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  82% {
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate3d(240%, 0, 0) skewX(-22deg);
+    opacity: 0;
+  }
+}
+
+/* Single-shot 450ms diagonal specular light sweep on newly activated physical cards */
+.card-shimmer-sweep {
+  position: absolute;
+  inset: -12% 0;
+  width: 58%;
+  pointer-events: none;
+  will-change: transform, opacity;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.14) 34%,
+    rgba(255, 255, 255, 0.36) 50%,
+    rgba(255, 255, 255, 0.12) 66%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translate3d(-140%, 0, 0) skewX(-22deg);
+  animation: card-shimmer-sweep-kf 450ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes urgent-border-beam-rotate {
+  from {
+    transform: translate3d(-50%, -50%, 0) rotate(0deg);
+  }
+  to {
+    transform: translate3d(-50%, -50%, 0) rotate(360deg);
+  }
+}
+
+/* Subtle GPU-composited rotating conic-gradient perimeter ring for urgent renewals (<= 2d) */
+.urgent-border-beam {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1.5px;
+  pointer-events: none;
+  overflow: hidden;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+}
+
+.urgent-border-beam::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  will-change: transform;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    transparent 255deg,
+    rgba(244, 63, 94, 0.28) 288deg,
+    rgba(244, 63, 94, 0.92) 326deg,
+    rgba(251, 146, 60, 0.85) 346deg,
+    transparent 360deg
+  );
+  transform: translate3d(-50%, -50%, 0) rotate(0deg);
+  animation: urgent-border-beam-rotate 3.6s linear infinite;
+}
+
+/* ==========================================================================
    Reduced Transparency & Reduced Motion Accessibility (Apple iOS 26 HIG)
    ========================================================================== */
 
@@ -475,5 +564,23 @@ html.theme-fallback-transition section {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .card-shimmer-sweep {
+    animation: none !important;
+    opacity: 0 !important;
+    display: none !important;
+  }
+
+  .urgent-border-beam::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+  .urgent-border-beam {
+    -webkit-mask: none !important;
+    mask: none !important;
+    padding: 0 !important;
+    box-shadow: inset 0 0 0 1.5px rgba(244, 63, 94, 0.52);
   }
 }

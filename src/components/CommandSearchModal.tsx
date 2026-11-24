@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import {
   ArrowRight,
   CornerDownLeft,
@@ -26,6 +26,7 @@ import {
   type ServiceCatalogItem,
 } from '../types/vault';
 import { formatAccountName, formatIdentityIdentifier } from '../utils/mask';
+import { ScrambleText, usePrefersReducedMotion } from './MotionPrimitives';
 import { IdentityLogoBadge, ServiceBadge } from './ServiceBadge';
 
 export interface CommandSearchModalProps {
@@ -61,6 +62,21 @@ type SearchEntry =
 
 const SPRING_PALETTE = { type: 'spring', stiffness: 460, damping: 34 } as const;
 
+const TYPEWRITER_HINTS = {
+  zh: [
+    '搜索 ChatGPT / Claude…',
+    '搜索卡尾号 4829 / 8021…',
+    '搜索 Maxis 5G / Gmail…',
+    '搜索 Maybank / GXBank…',
+  ],
+  en: [
+    'Search ChatGPT / Claude…',
+    'Search card last-4 4829…',
+    'Search Maxis 5G / Gmail…',
+    'Search Maybank / GXBank…',
+  ],
+} as const;
+
 export function CommandSearchModal({
   isOpen,
   onClose,
@@ -71,13 +87,14 @@ export function CommandSearchModal({
   onQuickBindService,
 }: CommandSearchModalProps) {
   const { t, language } = useT();
-  const prefersReducedMotion = useReducedMotion();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const identities = useVaultStore((s) => s.identities);
   const bindings = useVaultStore((s) => s.bindings);
   const privacyMode = useVaultStore((s) => s.privacyMode);
 
   const [query, setQuery] = useState('');
   const [activeIndex, setActiveIndex] = useState(0);
+  const [typedPlaceholder, setTypedPlaceholder] = useState('');
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -92,6 +109,57 @@ export function CommandSearchModal({
       document.body.style.overflow = prevOverflow;
     };
   }, [isOpen]);
+
+  // Subtle Spotlight typewriter placeholder when open, empty query, and motion allowed
+  useEffect(() => {
+    if (!isOpen || query.length > 0 || prefersReducedMotion) {
+      setTypedPlaceholder('');
+      return;
+    }
+
+    const hints = TYPEWRITER_HINTS[language];
+    let phraseIdx = 0;
+    let charIdx = 0;
+    let deleting = false;
+    let timerId: ReturnType<typeof setTimeout> | undefined;
+
+    const tick = () => {
+      const chars = Array.from(hints[phraseIdx]);
+      if (!deleting) {
+        charIdx += 1;
+        setTypedPlaceholder(chars.slice(0, charIdx).join(''));
+        if (charIdx >= chars.length) {
+          deleting = true;
+          timerId = setTimeout(tick, 1400);
+        } else {
+          timerId = setTimeout(tick, 45);
+        }
+      } else {
+        charIdx -= 1;
+        setTypedPlaceholder(chars.slice(0, charIdx).join(''));
+        if (charIdx <= 0) {
+          deleting = false;
+          phraseIdx = (phraseIdx + 1) % hints.length;
+          timerId = setTimeout(tick, 160);
+        } else {
+          timerId = setTimeout(tick, 22);
+        }
+      }
+    };
+
+    timerId = setTimeout(tick, 45);
+
+    return () => {
+      if (timerId !== undefined) {
+        clearTimeout(timerId);
+      }
+    };
+  }, [isOpen, query, language, prefersReducedMotion]);
+
+  const inputPlaceholder =
+    isOpen && query.length === 0 && !prefersReducedMotion
+      ? typedPlaceholder
+      : t('cmdPlaceholder');
 
   const identityMap = useMemo(
     () => new Map(identities.map((c) => [c.id, c])),
@@ -305,7 +373,7 @@ export function CommandSearchModal({
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={t('cmdPlaceholder')}
+                placeholder={inputPlaceholder}
                 className="min-w-0 flex-1 bg-transparent text-sm text-[#111113] placeholder:text-zinc-400 focus:outline-none dark:text-[#FAFAFA] dark:placeholder:text-zinc-500"
               />
               {query && (
@@ -395,7 +463,7 @@ export function CommandSearchModal({
                                     </span>
                                     <ArrowRight className="h-3.5 w-3.5 shrink-0 text-zinc-400" />
                                     <span className="truncate font-mono text-xs font-medium text-zinc-700 dark:text-zinc-200">
-                                      {maskedId}
+                                      <ScrambleText text={maskedId} triggerKey={privacyMode} />
                                     </span>
                                   </div>
                                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
@@ -409,12 +477,15 @@ export function CommandSearchModal({
                                       <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/14 px-1.5 py-0.5 font-mono text-[10px] font-semibold text-amber-900 dark:bg-amber-400/15 dark:text-amber-300">
                                         {t('billingChipPrefix')}：
                                         {billingCard.bankName || billingCard.label}{' '}
-                                        {formatIdentityIdentifier(
-                                          billingCard.identifier,
-                                          'bank',
-                                          privacyMode,
-                                          { last4: billingCard.cardLast4, compact: true },
-                                        )}
+                                        <ScrambleText
+                                          text={formatIdentityIdentifier(
+                                            billingCard.identifier,
+                                            'bank',
+                                            privacyMode,
+                                            { last4: billingCard.cardLast4, compact: true },
+                                          )}
+                                          triggerKey={privacyMode}
+                                        />
                                       </span>
                                     )}
                                     <span className="rounded-md bg-black/[0.045] px-1.5 py-0.5 text-[10px] font-medium text-zinc-600 dark:bg-white/[0.07] dark:text-zinc-300">
@@ -422,7 +493,13 @@ export function CommandSearchModal({
                                     </span>
                                     {binding.accountName && (
                                       <span className="truncate font-mono text-[10px] text-zinc-500 dark:text-zinc-400">
-                                        {formatAccountName(binding.accountName, privacyMode)}
+                                        <ScrambleText
+                                          text={formatAccountName(
+                                            binding.accountName,
+                                            privacyMode,
+                                          )}
+                                          triggerKey={privacyMode}
+                                        />
                                       </span>
                                     )}
                                   </div>
@@ -507,7 +584,7 @@ export function CommandSearchModal({
                                     </span>
                                   </div>
                                   <p className="truncate font-mono text-xs text-zinc-500 dark:text-zinc-400">
-                                    {maskedId}
+                                    <ScrambleText text={maskedId} triggerKey={privacyMode} />
                                   </p>
                                 </div>
                               </button>
